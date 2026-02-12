@@ -213,7 +213,7 @@ body {
 /* Feature information panel - displays WMS GetFeatureInfo results */
 #feature-info {
     position: absolute;   /* Position over the map */
-    top: 75px;            /* Below the header (10px + header height + small gap) */
+    top: 106px;           /* Below the header with proper spacing */
     bottom: 20px;         /* 20px from bottom of map */
     right: 20px;          /* 20px from right edge, aligned with header */
     background: white;
