@@ -67,14 +67,7 @@ const map = new ol.Map({
         // fromLonLat converts [longitude, latitude] to map projection (EPSG:3857)
         center: ol.proj.fromLonLat([-100, 40]),  // Center of USA
         zoom: 4  // Zoom level to see multiple states
-    }),
-    // Add map controls
-    controls: ol.control.defaults().extend([
-        // Add scale line control (shows map scale at bottom)
-        new ol.control.ScaleLine({
-            units: 'metric'  // Use metric units (can change to 'imperial' for miles)
-        })
-    ])
+    })
 });
 
 /**
