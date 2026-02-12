@@ -111,6 +111,25 @@ def logout():
     response.delete_cookie('logged_in')
     return response
 
+# Route: Test/Debug - Check session and cookie status
+# This route helps you verify authentication is working
+@app.route('/debug')
+def debug():
+    cookie_value = request.cookies.get('logged_in', 'Not set')
+    session_user = session.get('username', 'Not set')
+    
+    return f"""
+    <h2>Debug Information</h2>
+    <p><strong>Session Username:</strong> {session_user}</p>
+    <p><strong>Cookie 'logged_in':</strong> {cookie_value}</p>
+    <p><strong>All Cookies:</strong> {request.cookies}</p>
+    <p><strong>All Session Data:</strong> {dict(session)}</p>
+    <br>
+    <a href="{url_for('login')}">Go to Login</a> | 
+    <a href="{url_for('map')}">Go to Map</a> | 
+    <a href="{url_for('logout')}">Logout</a>
+    """
+
 # Run the Flask application
 # debug=True enables auto-reload and detailed error messages
 # WARNING: Set debug=False in production!
