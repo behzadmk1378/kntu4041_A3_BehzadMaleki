@@ -22,6 +22,11 @@ const wmsLayer = new ol.layer.Tile({
     source: wmsSource
 });
 
+// Create OSM base layer
+const osmLayer = new ol.layer.Tile({
+    source: new ol.source.OSM()
+});
+
 // Loading indicator management
 let tilesLoading = 0;
 
@@ -55,9 +60,7 @@ const map = new ol.Map({
     layers: [
         // Base layer - OpenStreetMap (free tile service)
         // Provides the background map with streets, buildings, etc.
-        new ol.layer.Tile({
-            source: new ol.source.OSM()
-        }),
+        osmLayer,
         
         // WMS Layer from GeoServer (on top of base layer)
         wmsLayer
@@ -89,19 +92,42 @@ function displayFeatureInfo(data) {
     
     // Check if any features were found at the clicked location
     if (data.features && data.features.length > 0) {
-        // Get the first feature (if multiple features, show the first one)
-        const feature = data.features[0];
-        const properties = feature.properties;
+        let html = '';
         
-        // Build HTML table to display all properties
-        let html = '<table>';
-        for (let key in properties) {
-            // Create a row for each property (attribute)
-            html += `<tr><th>${key}</th><td>${properties[key]}</td></tr>`;
+        // Add summary at the top if multiple features
+        if (data.features.length > 1) {
+            html += `<p style="margin-bottom: 15px; padding: 10px; background: #f0f0f0; border-radius: 5px; font-weight: 600;">
+                Found ${data.features.length} features at this location
+            </p>`;
         }
-        html += '</table>';
         
-        // Insert table into content div
+        // Loop through ALL features, not just the first one
+        data.features.forEach((feature, index) => {
+            const properties = feature.properties;
+            
+            // Add a separator between features if there are multiple
+            if (index > 0) {
+                html += '<hr style="margin: 15px 0; border: 1px solid #ddd;">';
+            }
+            
+            // Add feature number if multiple features
+            if (data.features.length > 1) {
+                html += `<h4 style="margin-bottom: 10px; color: #667eea;">Feature ${index + 1}</h4>`;
+            }
+            
+            // Build HTML table to display all properties
+            html += '<table>';
+            for (let key in properties) {
+                // Skip null or undefined values
+                if (properties[key] !== null && properties[key] !== undefined) {
+                    // Create a row for each property (attribute)
+                    html += `<tr><th>${key}</th><td>${properties[key]}</td></tr>`;
+                }
+            }
+            html += '</table>';
+        });
+        
+        // Insert all feature tables into content div
         contentDiv.innerHTML = html;
         // Show the info panel by adding 'active' class
         infoDiv.classList.add('active');
@@ -130,7 +156,8 @@ map.on('singleclick', function(evt) {
         viewResolution,
         'EPSG:3857',
         {
-            'INFO_FORMAT': 'application/json'  // Request JSON format (easier to parse)
+            'INFO_FORMAT': 'application/json',  // Request JSON format (easier to parse)
+            'FEATURE_COUNT': 50  // Get up to 50 features (default is usually 1)
         }
     );
     
@@ -180,4 +207,19 @@ map.on('pointermove', function(evt) {
     
     // Change cursor style: pointer over features, default otherwise
     map.getTargetElement().style.cursor = hit ? 'pointer' : '';
+});
+
+/**
+ * Layer Control Panel Functionality
+ * Toggle layer visibility based on checkbox state
+ */
+
+// OSM Layer toggle
+document.getElementById('osm-toggle').addEventListener('change', function(e) {
+    osmLayer.setVisible(e.target.checked);
+});
+
+// WMS Layer toggle
+document.getElementById('wms-toggle').addEventListener('change', function(e) {
+    wmsLayer.setVisible(e.target.checked);
 });

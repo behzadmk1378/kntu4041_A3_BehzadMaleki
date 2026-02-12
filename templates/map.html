@@ -21,6 +21,25 @@
             <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
         </div>
         
+        <!-- Layer control panel on the left -->
+        <div id="layer-panel">
+            <h3>Layers</h3>
+            <div class="layer-list">
+                <div class="layer-item">
+                    <label>
+                        <input type="checkbox" id="osm-toggle" checked>
+                        <span>OpenStreetMap (Base)</span>
+                    </label>
+                </div>
+                <div class="layer-item">
+                    <label>
+                        <input type="checkbox" id="wms-toggle" checked>
+                        <span>US States (WMS)</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        
         <!-- Loading indicator - shown while map tiles are loading -->
         <div id="loading" style="display:none;">Loading map...</div>
         
