@@ -1,0 +1,9 @@
+venv/
+flaskvenv/
+__pycache__/
+*.pyc
+.env
+.vscode/
+instance/
+*.db
+.DS_Store
