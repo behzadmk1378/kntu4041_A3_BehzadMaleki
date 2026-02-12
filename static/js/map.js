@@ -51,3 +51,87 @@ function closeFeatureInfo() {
     // Remove 'active' class to hide the panel (CSS display: none)
     document.getElementById('feature-info').classList.remove('active');
 }
+
+/**
+ * Display feature information in the info panel
+ * @param {Object} data - GeoJSON FeatureCollection from GetFeatureInfo response
+ */
+function displayFeatureInfo(data) {
+    const infoDiv = document.getElementById('feature-info');
+    const contentDiv = document.getElementById('info-content');
+    
+    // Check if any features were found at the clicked location
+    if (data.features && data.features.length > 0) {
+        // Get the first feature (if multiple features, show the first one)
+        const feature = data.features[0];
+        const properties = feature.properties;
+        
+        // Build HTML table to display all properties
+        let html = '<table>';
+        for (let key in properties) {
+            // Create a row for each property (attribute)
+            html += `<tr><th>${key}</th><td>${properties[key]}</td></tr>`;
+        }
+        html += '</table>';
+        
+        // Insert table into content div
+        contentDiv.innerHTML = html;
+        // Show the info panel by adding 'active' class
+        infoDiv.classList.add('active');
+    } else {
+        // No features found at clicked location
+        contentDiv.innerHTML = '<p>No features found at this location.</p>';
+        infoDiv.classList.add('active');
+    }
+}
+
+/**
+ * Map Click Event Handler for GetFeatureInfo
+ * Triggered when user clicks anywhere on the map
+ */
+map.on('singleclick', function(evt) {
+    // Get current map resolution for GetFeatureInfo request
+    const viewResolution = map.getView().getResolution();
+    
+    // Build GetFeatureInfo URL from WMS source
+    // evt.coordinate: clicked point in map coordinates
+    // viewResolution: current zoom level resolution
+    // 'EPSG:3857': map projection (Web Mercator)
+    // INFO_FORMAT: request JSON response format
+    const url = wmsSource.getFeatureInfoUrl(
+        evt.coordinate,
+        viewResolution,
+        'EPSG:3857',
+        {
+            'INFO_FORMAT': 'application/json'  // Request JSON format (easier to parse)
+        }
+    );
+    
+    // If URL was successfully generated
+    if (url) {
+        // Show loading message while fetching data
+        document.getElementById('info-content').innerHTML = '<p>Loading...</p>';
+        document.getElementById('feature-info').classList.add('active');
+        
+        // Make HTTP request to GeoServer GetFeatureInfo endpoint
+        fetch(url)
+            .then(response => {
+                // Check if response is successful (status 200)
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                // Parse JSON response
+                return response.json();
+            })
+            .then(data => {
+                // Display the feature information
+                displayFeatureInfo(data);
+            })
+            .catch(error => {
+                // Handle errors (network issues, server errors, etc.)
+                document.getElementById('info-content').innerHTML = 
+                    '<p style="color:red;">Error loading feature information.</p>';
+                console.error('GetFeatureInfo Error:', error);
+            });
+    }
+});
