@@ -21,6 +21,9 @@
             <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
         </div>
         
+        <!-- Loading indicator - shown while map tiles are loading -->
+        <div id="loading" style="display:none;">Loading map...</div>
+        
         <!-- Map container - OpenLayers will render here -->
         <div id="map"></div>
         

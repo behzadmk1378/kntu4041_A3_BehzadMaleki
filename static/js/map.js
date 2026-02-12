@@ -22,6 +22,33 @@ const wmsLayer = new ol.layer.Tile({
     source: wmsSource
 });
 
+// Loading indicator management
+let tilesLoading = 0;
+
+// Show loading indicator when tiles start loading
+wmsSource.on('tileloadstart', function() {
+    tilesLoading++;
+    if (tilesLoading > 0) {
+        document.getElementById('loading').style.display = 'block';
+    }
+});
+
+// Hide loading indicator when tiles finish loading
+wmsSource.on('tileloadend', function() {
+    tilesLoading--;
+    if (tilesLoading === 0) {
+        document.getElementById('loading').style.display = 'none';
+    }
+});
+
+// Hide loading indicator if tile loading fails
+wmsSource.on('tileloaderror', function() {
+    tilesLoading--;
+    if (tilesLoading === 0) {
+        document.getElementById('loading').style.display = 'none';
+    }
+});
+
 // Initialize the OpenLayers map
 const map = new ol.Map({
     target: 'map',  // HTML element ID where map will be rendered
@@ -40,7 +67,14 @@ const map = new ol.Map({
         // fromLonLat converts [longitude, latitude] to map projection (EPSG:3857)
         center: ol.proj.fromLonLat([-100, 40]),  // Center of USA
         zoom: 4  // Zoom level to see multiple states
-    })
+    }),
+    // Add map controls
+    controls: ol.control.defaults().extend([
+        // Add scale line control (shows map scale at bottom)
+        new ol.control.ScaleLine({
+            units: 'metric'  // Use metric units (can change to 'imperial' for miles)
+        })
+    ])
 });
 
 /**
@@ -134,4 +168,23 @@ map.on('singleclick', function(evt) {
                 console.error('GetFeatureInfo Error:', error);
             });
     }
+});
+
+/**
+ * Change cursor to pointer when hovering over WMS layer
+ * Provides visual feedback that features are clickable
+ */
+map.on('pointermove', function(evt) {
+    if (evt.dragging) {
+        return; // Don't change cursor while dragging
+    }
+    
+    // Check if mouse is over the WMS layer
+    const pixel = map.getEventPixel(evt.originalEvent);
+    const hit = map.forEachLayerAtPixel(pixel, function(layer) {
+        return layer === wmsLayer; // Only check WMS layer
+    });
+    
+    // Change cursor style: pointer over features, default otherwise
+    map.getTargetElement().style.cursor = hit ? 'pointer' : '';
 });

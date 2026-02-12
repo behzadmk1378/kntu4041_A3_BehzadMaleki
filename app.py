@@ -113,6 +113,7 @@ def logout():
 
 # Route: Test/Debug - Check session and cookie status
 # This route helps you verify authentication is working
+# WARNING: Remove or protect this route in production!
 @app.route('/debug')
 def debug():
     cookie_value = request.cookies.get('logged_in', 'Not set')
