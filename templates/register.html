@@ -2,43 +2,56 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <!-- Responsive viewport for mobile devices -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - WebGIS</title>
+    <!-- Link to external CSS file using Flask's url_for helper -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
+    <!-- Main container for centering content -->
     <div class="container">
+        <!-- Authentication box with registration form -->
         <div class="auth-box">
             <h1>Create Account</h1>
             
+            <!-- Display error message if registration failed -->
+            <!-- Jinja2 template syntax for conditional rendering -->
             {% if error %}
             <div class="error-message">{{ error }}</div>
             {% endif %}
             
+            <!-- Registration form - submits to /register route via POST -->
             <form method="POST" action="{{ url_for('register') }}">
+                <!-- Username input field -->
                 <div class="form-group">
                     <label for="username">Username</label>
                     <input type="text" id="username" name="username" required>
                 </div>
                 
+                <!-- Email input field with automatic validation -->
                 <div class="form-group">
                     <label for="email">Email</label>
                     <input type="email" id="email" name="email" required>
                 </div>
                 
+                <!-- Password input field (hidden text) -->
                 <div class="form-group">
                     <label for="password">Password</label>
                     <input type="password" id="password" name="password" required>
                 </div>
                 
+                <!-- Password confirmation field -->
                 <div class="form-group">
                     <label for="confirm_password">Confirm Password</label>
                     <input type="password" id="confirm_password" name="confirm_password" required>
                 </div>
                 
+                <!-- Submit button -->
                 <button type="submit" class="btn">Register</button>
             </form>
             
+            <!-- Link to login page for existing users -->
             <p class="auth-link">
                 Already have an account? <a href="{{ url_for('login') }}">Login here</a>
             </p>

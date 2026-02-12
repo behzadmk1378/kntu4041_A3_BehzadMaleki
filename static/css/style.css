@@ -1,225 +1,280 @@
+/**
+ * WebGIS Application Styles
+ * Contains styles for authentication pages and map interface
+ */
+
+/* ========================================
+   GLOBAL STYLES
+   ======================================== */
+
+/* Reset default browser margins, padding, and set box-sizing */
 * {
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
+    box-sizing: border-box;  /* Include padding and border in element's total width/height */
 }
 
+/* Body styles - applies to all pages */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /* Purple gradient background for authentication pages */
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
+    min-height: 100vh;  /* Minimum height of viewport */
 }
 
+/* ========================================
+   AUTHENTICATION PAGES (Login & Register)
+   ======================================== */
+
+/* Main container - centers content vertically and horizontally */
 .container {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    padding: 20px;
+    justify-content: center;  /* Horizontal centering */
+    align-items: center;      /* Vertical centering */
+    min-height: 100vh;        /* Full viewport height */
+    padding: 20px;            /* Spacing on small screens */
 }
 
+/* White box containing login/register forms */
 .auth-box {
     background: white;
     padding: 40px;
-    border-radius: 10px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    border-radius: 10px;  /* Rounded corners */
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);  /* Drop shadow for depth */
     width: 100%;
-    max-width: 400px;
+    max-width: 400px;  /* Limit width on large screens */
 }
 
+/* Page heading (Login/Register title) */
 .auth-box h1 {
     margin-bottom: 30px;
     color: #333;
     text-align: center;
 }
 
+/* Form input groups (label + input field) */
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 20px;  /* Space between form fields */
 }
 
+/* Labels for form inputs */
 .form-group label {
-    display: block;
-    margin-bottom: 5px;
+    display: block;       /* Take full width */
+    margin-bottom: 5px;   /* Space between label and input */
     color: #555;
-    font-weight: 500;
+    font-weight: 500;     /* Medium weight font */
 }
 
+/* Text, email, and password input fields */
 .form-group input {
     width: 100%;
     padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+    border: 1px solid #ddd;  /* Light gray border */
+    border-radius: 5px;      /* Slightly rounded corners */
     font-size: 14px;
 }
 
+/* Input field on focus (when user clicks/tabs into it) */
 .form-group input:focus {
-    outline: none;
-    border-color: #667eea;
+    outline: none;           /* Remove default browser outline */
+    border-color: #667eea;   /* Change border to purple when focused */
 }
 
+/* Primary button (Login, Register) */
 .btn {
     width: 100%;
     padding: 12px;
-    background: #667eea;
+    background: #667eea;     /* Purple background */
     color: white;
     border: none;
     border-radius: 5px;
     font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.3s;
+    font-weight: 600;        /* Semi-bold */
+    cursor: pointer;         /* Show pointer cursor on hover */
+    transition: background 0.3s;  /* Smooth color transition */
 }
 
+/* Button hover effect */
 .btn:hover {
-    background: #5568d3;
+    background: #5568d3;     /* Darker purple on hover */
 }
 
+/* Link text below forms (e.g., "Don't have an account?") */
 .auth-link {
     text-align: center;
     margin-top: 20px;
     color: #666;
 }
 
+/* Hyperlinks in auth-link */
 .auth-link a {
-    color: #667eea;
-    text-decoration: none;
+    color: #667eea;          /* Purple color matching theme */
+    text-decoration: none;   /* Remove underline */
     font-weight: 600;
 }
 
+/* Link hover effect */
 .auth-link a:hover {
-    text-decoration: underline;
+    text-decoration: underline;  /* Add underline on hover */
 }
 
+/* Error message box (e.g., invalid credentials, passwords don't match) */
 .error-message {
-    background: #fee;
-    color: #c33;
+    background: #fee;        /* Light red background */
+    color: #c33;             /* Dark red text */
     padding: 10px;
     border-radius: 5px;
     margin-bottom: 20px;
-    border: 1px solid #fcc;
+    border: 1px solid #fcc;  /* Red border */
 }
 
+/* Success message box (e.g., registration successful) */
 .success-message {
-    background: #efe;
-    color: #3c3;
+    background: #efe;        /* Light green background */
+    color: #3c3;             /* Dark green text */
     padding: 10px;
     border-radius: 5px;
     margin-bottom: 20px;
-    border: 1px solid #cfc;
+    border: 1px solid #cfc;  /* Green border */
 }
 
-/* Map page styles */
+/* ========================================
+   MAP PAGE STYLES
+   ======================================== */
+
+/* Main container for map page - fills entire viewport */
 .map-container {
-    position: relative;
+    position: relative;  /* Allows absolute positioning of child elements */
     width: 100%;
-    height: 100vh;
+    height: 100vh;       /* Full viewport height */
 }
 
+/* Map div - OpenLayers renders map here */
 #map {
     width: 100%;
     height: 100%;
 }
 
+/* Header bar at top of map page */
 .map-header {
-    position: absolute;
+    position: absolute;   /* Position over the map */
     top: 10px;
     left: 10px;
     right: 10px;
     background: white;
     padding: 15px 20px;
     border-radius: 5px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);  /* Drop shadow for depth */
+    z-index: 1000;        /* Ensure header appears above map */
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between;  /* Username on left, logout on right */
     align-items: center;
 }
 
+/* Welcome message with username */
 .map-header h2 {
     color: #333;
     margin: 0;
 }
 
+/* Logout button */
 .logout-btn {
     padding: 8px 20px;
-    background: #dc3545;
+    background: #dc3545;  /* Red background */
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    text-decoration: none;
+    text-decoration: none;  /* Remove underline (it's a link styled as button) */
     font-weight: 600;
 }
 
+/* Logout button hover effect */
 .logout-btn:hover {
-    background: #c82333;
+    background: #c82333;  /* Darker red on hover */
 }
 
+/* Feature information panel - displays WMS GetFeatureInfo results */
 #feature-info {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
+    position: absolute;   /* Position over the map */
+    bottom: 20px;         /* 20px from bottom of map */
+    right: 20px;          /* 20px from right edge */
     background: white;
     padding: 15px;
     border-radius: 5px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    z-index: 1000;
-    max-width: 400px;
-    max-height: 300px;
-    overflow-y: auto;
-    display: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);  /* Drop shadow */
+    z-index: 1000;        /* Appear above map */
+    max-width: 400px;     /* Limit width */
+    max-height: 300px;    /* Limit height */
+    overflow-y: auto;     /* Scrollbar if content too tall */
+    display: none;        /* Hidden by default */
 }
 
+/* Show feature info panel when 'active' class is added */
 #feature-info.active {
     display: block;
 }
 
+/* Feature info heading */
 #feature-info h3 {
     margin-top: 0;
     margin-bottom: 10px;
     color: #333;
 }
 
+/* Table displaying feature attributes */
 #feature-info table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: collapse;  /* Remove gaps between cells */
 }
 
+/* Table header and data cells */
 #feature-info table th,
 #feature-info table td {
     padding: 8px;
     text-align: left;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;  /* Row separator lines */
 }
 
+/* Table header cells */
 #feature-info table th {
-    background: #f5f5f5;
+    background: #f5f5f5;  /* Light gray background */
     font-weight: 600;
 }
 
+/* Close button (X) for feature info panel */
 .close-btn {
-    float: right;
+    float: right;         /* Position on right side */
     cursor: pointer;
-    color: #999;
+    color: #999;          /* Gray color */
     font-size: 20px;
     line-height: 1;
 }
 
+/* Close button hover effect */
 .close-btn:hover {
-    color: #333;
+    color: #333;          /* Darker on hover */
 }
 
+/* ========================================
+   RESPONSIVE DESIGN - Mobile & Tablet
+   ======================================== */
+
+/* Media query for screens smaller than 768px (tablets & phones) */
 @media (max-width: 768px) {
+    /* Stack header items vertically on small screens */
     .map-header {
         flex-direction: column;
         align-items: flex-start;
     }
     
+    /* Smaller heading on mobile */
     .map-header h2 {
         margin-bottom: 10px;
         font-size: 18px;
     }
     
+    /* Make feature info panel wider on mobile (90% of screen width) */
     #feature-info {
         max-width: 90%;
         bottom: 10px;

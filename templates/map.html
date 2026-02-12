@@ -2,28 +2,42 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <!-- Responsive viewport for mobile devices -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Map - WebGIS</title>
+    <!-- OpenLayers CSS from CDN for map styling -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.3.0/ol.css">
+    <!-- Custom CSS styles -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
+    <!-- Main container for map and UI elements -->
     <div class="map-container">
+        <!-- Header bar with welcome message and logout button -->
         <div class="map-header">
+            <!-- Display logged-in username from Flask session -->
             <h2>Welcome, {{ username }}!</h2>
+            <!-- Logout button redirects to /logout route -->
             <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
         </div>
         
+        <!-- Map container - OpenLayers will render here -->
         <div id="map"></div>
         
+        <!-- Feature information panel (hidden by default) -->
+        <!-- Will display WMS GetFeatureInfo results when user clicks on map -->
         <div id="feature-info">
+            <!-- Close button calls JavaScript function -->
             <span class="close-btn" onclick="closeFeatureInfo()">&times;</span>
             <h3>Feature Information</h3>
+            <!-- Content will be populated by JavaScript -->
             <div id="info-content"></div>
         </div>
     </div>
     
+    <!-- OpenLayers JavaScript library from CDN -->
     <script src="https://cdn.jsdelivr.net/npm/ol@v7.3.0/dist/ol.js"></script>
+    <!-- Custom JavaScript for map initialization and interactions -->
     <script src="{{ url_for('static', filename='js/map.js') }}"></script>
 </body>
 </html>
