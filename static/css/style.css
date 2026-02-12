@@ -213,6 +213,7 @@ body {
 /* Feature information panel - displays WMS GetFeatureInfo results */
 #feature-info {
     position: absolute;   /* Position over the map */
+    top: 80px;            /* Below the header */
     bottom: 20px;         /* 20px from bottom of map */
     right: 20px;          /* 20px from right edge */
     background: white;
@@ -220,8 +221,7 @@ body {
     border-radius: 5px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.2);  /* Drop shadow */
     z-index: 1000;        /* Appear above map */
-    max-width: 400px;     /* Limit width */
-    max-height: 300px;    /* Limit height */
+    width: 400px;         /* Fixed width */
     overflow-y: auto;     /* Scrollbar if content too tall */
     display: none;        /* Hidden by default */
 }
@@ -290,10 +290,12 @@ body {
         font-size: 18px;
     }
     
-    /* Make feature info panel wider on mobile (90% of screen width) */
+    /* Make feature info panel narrower on mobile (90% of screen width) */
     #feature-info {
-        max-width: 90%;
+        width: 90%;
+        top: 80px;
         bottom: 10px;
-        right: 10px;
+        right: 5%;
+        left: 5%;
     }
 }
