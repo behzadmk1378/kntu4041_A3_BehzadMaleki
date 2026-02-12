@@ -175,8 +175,8 @@ body {
 .map-header {
     position: absolute;   /* Position over the map */
     top: 10px;
-    left: 10px;
-    right: 10px;
+    right: 20px;          /* Align with feature info panel */
+    width: 400px;         /* Same width as feature info panel */
     background: white;
     padding: 15px 20px;
     border-radius: 5px;
@@ -213,15 +213,15 @@ body {
 /* Feature information panel - displays WMS GetFeatureInfo results */
 #feature-info {
     position: absolute;   /* Position over the map */
-    top: 80px;            /* Below the header */
+    top: 75px;            /* Below the header (10px + header height + small gap) */
     bottom: 20px;         /* 20px from bottom of map */
-    right: 20px;          /* 20px from right edge */
+    right: 20px;          /* 20px from right edge, aligned with header */
     background: white;
     padding: 15px;
     border-radius: 5px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.2);  /* Drop shadow */
     z-index: 1000;        /* Appear above map */
-    width: 400px;         /* Fixed width */
+    width: 400px;         /* Fixed width, same as header */
     overflow-y: auto;     /* Scrollbar if content too tall */
     display: none;        /* Hidden by default */
 }
@@ -280,6 +280,8 @@ body {
 @media (max-width: 768px) {
     /* Stack header items vertically on small screens */
     .map-header {
+        width: 90%;
+        right: 5%;
         flex-direction: column;
         align-items: flex-start;
     }
@@ -293,7 +295,7 @@ body {
     /* Make feature info panel narrower on mobile (90% of screen width) */
     #feature-info {
         width: 90%;
-        top: 80px;
+        top: 110px;          /* More space for stacked header on mobile */
         bottom: 10px;
         right: 5%;
         left: 5%;
