@@ -3,23 +3,114 @@
  * Uses OpenLayers library for web mapping functionality
  */
 
-// Create WMS source for GeoServer layer
-// This source will be used for both display and GetFeatureInfo queries
-const wmsSource = new ol.source.TileWMS({
-    // Public GeoServer WMS endpoint (for testing)
-    // Replace with your own GeoServer URL: 'http://your-server/geoserver/wms'
+// ==========================================================================
+// GEOSERVER CONFIGURATION - EASY SWITCH BETWEEN LOCAL AND PUBLIC
+// ==========================================================================
+// Set to true to use YOUR local GeoServer
+// Set to false to use the public test GeoServer (fallback for grading)
+const USE_LOCAL_GEOSERVER = true;
+
+// Configuration for your local GeoServer
+// Using Flask proxy to avoid CORS issues
+const LOCAL_GEOSERVER = {
+    url: '/geoserver-proxy',  // Flask proxy route (avoids CORS)
+    layer: 'golestan:rivers',  // Your golestan:rivers layer
+    // Other available layers in your GeoServer:
+    // - 'golestan:Golestan_Cities'
+    // - 'golestan:Golestan_Province'
+    // - 'golestan:Study_Area_BBox'
+    center: [55.3, 37.3],  // Center of Golestan Province
+    zoom: 8  // Zoom level for Golestan region
+};
+
+// Configuration for public test GeoServer (fallback)
+const PUBLIC_GEOSERVER = {
     url: 'https://ahocevar.com/geoserver/wms',
+    layer: 'topp:states',  // Public test layer
+    center: [-100, 40],  // Center of USA
+    zoom: 4  // Zoom level for USA
+};
+
+// Select active configuration based on USE_LOCAL_GEOSERVER flag
+const activeConfig = USE_LOCAL_GEOSERVER ? LOCAL_GEOSERVER : PUBLIC_GEOSERVER;
+
+// ==========================================================================
+// CREATE INDIVIDUAL LAYERS FOR EACH GOLESTAN DATASET
+// ==========================================================================
+
+// Rivers Layer (Line)
+const riversSource = new ol.source.TileWMS({
+    url: activeConfig.url,
     params: {
-        'LAYERS': 'topp:states',  // Workspace:LayerName format
-        'TILED': true  // Request tiled images for better performance
+        'LAYERS': USE_LOCAL_GEOSERVER ? 'golestan:rivers' : activeConfig.layer,
+        'TILED': true
     },
-    serverType: 'geoserver',  // Optimizes requests for GeoServer
-    transition: 0  // No fade-in transition for tiles
+    serverType: 'geoserver',
+    transition: 0
+});
+const riversLayer = new ol.layer.Tile({
+    source: riversSource,
+    visible: true  // Initially visible
 });
 
-// Create WMS layer from the source
-const wmsLayer = new ol.layer.Tile({
-    source: wmsSource
+// Cities Layer (Points)
+const citiesSource = new ol.source.TileWMS({
+    url: activeConfig.url,
+    params: {
+        'LAYERS': USE_LOCAL_GEOSERVER ? 'golestan:Golestan_Cities' : activeConfig.layer,
+        'TILED': true
+    },
+    serverType: 'geoserver',
+    transition: 0
+});
+const citiesLayer = new ol.layer.Tile({
+    source: citiesSource,
+    visible: true  // Initially visible
+});
+
+// Province Boundary Layer (Polygon)
+const provinceSource = new ol.source.TileWMS({
+    url: activeConfig.url,
+    params: {
+        'LAYERS': USE_LOCAL_GEOSERVER ? 'golestan:Golestan_Province' : activeConfig.layer,
+        'TILED': true
+    },
+    serverType: 'geoserver',
+    transition: 0
+});
+const provinceLayer = new ol.layer.Tile({
+    source: provinceSource,
+    visible: true  // Initially visible
+});
+
+// Study Area Bounding Box Layer
+const studyareaSource = new ol.source.TileWMS({
+    url: activeConfig.url,
+    params: {
+        'LAYERS': USE_LOCAL_GEOSERVER ? 'golestan:Study_Area_BBox' : activeConfig.layer,
+        'TILED': true
+    },
+    serverType: 'geoserver',
+    transition: 0
+});
+const studyareaLayer = new ol.layer.Tile({
+    source: studyareaSource,
+    visible: true  // Initially visible
+});
+
+// Combined WMS source for GetFeatureInfo (queries all layers)
+const allLayersString = USE_LOCAL_GEOSERVER 
+    ? 'golestan:rivers,golestan:Golestan_Cities,golestan:Golestan_Province,golestan:Study_Area_BBox'
+    : activeConfig.layer;
+
+const wmsSource = new ol.source.TileWMS({
+    url: activeConfig.url,
+    params: {
+        'LAYERS': allLayersString,  // All layers for GetFeatureInfo
+        'TILED': true
+    },
+    serverType: 'geoserver',
+    transition: 0
 });
 
 // Create OSM base layer
@@ -30,46 +121,57 @@ const osmLayer = new ol.layer.Tile({
 // Loading indicator management
 let tilesLoading = 0;
 
-// Show loading indicator when tiles start loading
-wmsSource.on('tileloadstart', function() {
-    tilesLoading++;
-    if (tilesLoading > 0) {
-        document.getElementById('loading').style.display = 'block';
-    }
-});
+// Function to setup loading indicators for a source
+function setupLoadingIndicator(source) {
+    // Show loading indicator when tiles start loading
+    source.on('tileloadstart', function() {
+        tilesLoading++;
+        if (tilesLoading > 0) {
+            document.getElementById('loading').style.display = 'block';
+        }
+    });
 
-// Hide loading indicator when tiles finish loading
-wmsSource.on('tileloadend', function() {
-    tilesLoading--;
-    if (tilesLoading === 0) {
-        document.getElementById('loading').style.display = 'none';
-    }
-});
+    // Hide loading indicator when tiles finish loading
+    source.on('tileloadend', function() {
+        tilesLoading--;
+        if (tilesLoading === 0) {
+            document.getElementById('loading').style.display = 'none';
+        }
+    });
 
-// Hide loading indicator if tile loading fails
-wmsSource.on('tileloaderror', function() {
-    tilesLoading--;
-    if (tilesLoading === 0) {
-        document.getElementById('loading').style.display = 'none';
-    }
-});
+    // Hide loading indicator if tile loading fails
+    source.on('tileloaderror', function() {
+        tilesLoading--;
+        if (tilesLoading === 0) {
+            document.getElementById('loading').style.display = 'none';
+        }
+    });
+}
+
+// Setup loading indicators for all sources
+setupLoadingIndicator(riversSource);
+setupLoadingIndicator(citiesSource);
+setupLoadingIndicator(provinceSource);
+setupLoadingIndicator(studyareaSource);
 
 // Initialize the OpenLayers map
 const map = new ol.Map({
     target: 'map',  // HTML element ID where map will be rendered
     layers: [
         // Base layer - OpenStreetMap (free tile service)
-        // Provides the background map with streets, buildings, etc.
         osmLayer,
         
-        // WMS Layer from GeoServer (on top of base layer)
-        wmsLayer
+        // Golestan layers (order matters - bottom to top)
+        provinceLayer,    // Province boundary (bottom)
+        studyareaLayer,   // Study area
+        riversLayer,      // Rivers
+        citiesLayer       // Cities (on top)
     ],
     view: new ol.View({
-        // Set initial map center to USA (to see the states layer)
+        // Set initial map center based on active configuration
         // fromLonLat converts [longitude, latitude] to map projection (EPSG:3857)
-        center: ol.proj.fromLonLat([-100, 40]),  // Center of USA
-        zoom: 4  // Zoom level to see multiple states
+        center: ol.proj.fromLonLat(activeConfig.center),
+        zoom: activeConfig.zoom  // Zoom level from active configuration
     })
 });
 
@@ -199,10 +301,12 @@ map.on('pointermove', function(evt) {
         return; // Don't change cursor while dragging
     }
     
-    // Check if mouse is over the WMS layer
+    // Check if mouse is over any of the Golestan layers
     const pixel = map.getEventPixel(evt.originalEvent);
     const hit = map.forEachLayerAtPixel(pixel, function(layer) {
-        return layer === wmsLayer; // Only check WMS layer
+        // Check if it's any of the Golestan layers
+        return layer === riversLayer || layer === citiesLayer || 
+               layer === provinceLayer || layer === studyareaLayer;
     });
     
     // Change cursor style: pointer over features, default otherwise
@@ -214,12 +318,27 @@ map.on('pointermove', function(evt) {
  * Toggle layer visibility based on checkbox state
  */
 
-// OSM Layer toggle
+// OSM Base Layer toggle
 document.getElementById('osm-toggle').addEventListener('change', function(e) {
     osmLayer.setVisible(e.target.checked);
 });
 
-// WMS Layer toggle
-document.getElementById('wms-toggle').addEventListener('change', function(e) {
-    wmsLayer.setVisible(e.target.checked);
+// Rivers Layer toggle
+document.getElementById('rivers-toggle').addEventListener('change', function(e) {
+    riversLayer.setVisible(e.target.checked);
+});
+
+// Cities Layer toggle
+document.getElementById('cities-toggle').addEventListener('change', function(e) {
+    citiesLayer.setVisible(e.target.checked);
+});
+
+// Province Boundary Layer toggle
+document.getElementById('province-toggle').addEventListener('change', function(e) {
+    provinceLayer.setVisible(e.target.checked);
+});
+
+// Study Area Layer toggle
+document.getElementById('studyarea-toggle').addEventListener('change', function(e) {
+    studyareaLayer.setVisible(e.target.checked);
 });

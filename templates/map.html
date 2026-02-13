@@ -25,16 +25,48 @@
         <div id="layer-panel">
             <h3>Layers</h3>
             <div class="layer-list">
+                <!-- Base Layer -->
                 <div class="layer-item">
                     <label>
                         <input type="checkbox" id="osm-toggle" checked>
                         <span>OpenStreetMap (Base)</span>
                     </label>
                 </div>
+                
+                <!-- Separator -->
+                <div style="margin: 10px 0; padding: 5px 0; border-top: 1px solid #ddd;">
+                    <strong style="font-size: 0.9em; color: #667eea;">Golestan Layers</strong>
+                </div>
+                
+                <!-- Golestan: Rivers Layer -->
                 <div class="layer-item">
                     <label>
-                        <input type="checkbox" id="wms-toggle" checked>
-                        <span>US States (WMS)</span>
+                        <input type="checkbox" id="rivers-toggle" checked>
+                        <span>Rivers</span>
+                    </label>
+                </div>
+                
+                <!-- Golestan: Cities Layer -->
+                <div class="layer-item">
+                    <label>
+                        <input type="checkbox" id="cities-toggle" checked>
+                        <span>Cities</span>
+                    </label>
+                </div>
+                
+                <!-- Golestan: Province Boundary -->
+                <div class="layer-item">
+                    <label>
+                        <input type="checkbox" id="province-toggle" checked>
+                        <span>Province Boundary</span>
+                    </label>
+                </div>
+                
+                <!-- Golestan: Study Area -->
+                <div class="layer-item">
+                    <label>
+                        <input type="checkbox" id="studyarea-toggle" checked>
+                        <span>Study Area</span>
                     </label>
                 </div>
             </div>

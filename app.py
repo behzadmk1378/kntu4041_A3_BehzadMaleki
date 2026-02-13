@@ -1,6 +1,7 @@
 # Import necessary Flask modules for web application functionality
-from flask import Flask, render_template, request, redirect, url_for, session, make_response
+from flask import Flask, render_template, request, redirect, url_for, session, make_response, Response
 import secrets  # For generating secure random tokens
+import requests  # For making HTTP requests to GeoServer
 
 # Initialize Flask application
 app = Flask(__name__)
@@ -130,6 +131,43 @@ def debug():
     <a href="{url_for('map')}">Go to Map</a> | 
     <a href="{url_for('logout')}">Logout</a>
     """
+
+# Route: GeoServer Proxy
+# Proxies requests to GeoServer to avoid CORS issues
+# Browser talks to Flask (same origin), Flask talks to GeoServer (server-to-server)
+@app.route('/geoserver-proxy')
+def geoserver_proxy():
+    # Get all query parameters from the request
+    query_string = request.query_string.decode('utf-8')
+    
+    # Build the GeoServer URL
+    geoserver_url = f'http://localhost:8081/geoserver/wms?{query_string}'
+    
+    try:
+        # Forward the request to GeoServer
+        response = requests.get(geoserver_url, timeout=10)
+        
+        # Create Flask response with GeoServer's content
+        flask_response = Response(
+            response.content,
+            status=response.status_code,
+            content_type=response.headers.get('Content-Type', 'application/octet-stream')
+        )
+        
+        # Add CORS headers to allow browser access
+        flask_response.headers['Access-Control-Allow-Origin'] = '*'
+        flask_response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
+        flask_response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+        
+        return flask_response
+        
+    except requests.exceptions.RequestException as e:
+        # Handle errors (GeoServer down, network issues, etc.)
+        return Response(
+            f'Error connecting to GeoServer: {str(e)}',
+            status=503,
+            content_type='text/plain'
+        )
 
 # Run the Flask application
 # debug=True enables auto-reload and detailed error messages
