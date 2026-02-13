@@ -185,6 +185,42 @@ function closeFeatureInfo() {
 }
 
 /**
+ * Extract and format layer name from feature ID
+ * Feature ID format: "workspace:layername.featureid" or just "layername.featureid"
+ * @param {string} featureId - The feature ID (e.g., "golestan:rivers.1")
+ * @returns {string} - Formatted layer name (e.g., "Rivers")
+ */
+function getLayerNameFromFeature(featureId) {
+    if (!featureId) return 'Unknown Layer';
+    
+    // Extract layer name from ID (format: workspace:layername.id or layername.id)
+    let layerName = featureId;
+    
+    // Remove workspace prefix if present (e.g., "golestan:rivers.1" -> "rivers.1")
+    if (layerName.includes(':')) {
+        layerName = layerName.split(':')[1];
+    }
+    
+    // Remove feature ID suffix (e.g., "rivers.1" -> "rivers")
+    if (layerName.includes('.')) {
+        layerName = layerName.split('.')[0];
+    }
+    
+    // Format the layer name for display
+    // Convert "Golestan_Cities" -> "Golestan Cities"
+    // Convert "Study_Area_BBox" -> "Study Area BBox"
+    // Convert "rivers" -> "Rivers"
+    layerName = layerName.replace(/_/g, ' ');
+    
+    // Capitalize first letter of each word
+    layerName = layerName.split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+    
+    return layerName;
+}
+
+/**
  * Display feature information in the info panel
  * @param {Object} data - GeoJSON FeatureCollection from GetFeatureInfo response
  */
@@ -207,15 +243,19 @@ function displayFeatureInfo(data) {
         data.features.forEach((feature, index) => {
             const properties = feature.properties;
             
+            // Extract layer name from feature ID
+            const layerName = getLayerNameFromFeature(feature.id);
+            
             // Add a separator between features if there are multiple
             if (index > 0) {
                 html += '<hr style="margin: 15px 0; border: 1px solid #ddd;">';
             }
             
-            // Add feature number if multiple features
-            if (data.features.length > 1) {
-                html += `<h4 style="margin-bottom: 10px; color: #667eea;">Feature ${index + 1}</h4>`;
-            }
+            // Display layer name as the header for each feature
+            html += `<h4 style="margin-bottom: 10px; color: #667eea; display: flex; align-items: center;">
+                <span style="background: #667eea; color: white; padding: 2px 8px; border-radius: 3px; font-size: 0.85em; margin-right: 8px;">Layer</span>
+                ${layerName}
+            </h4>`;
             
             // Build HTML table to display all properties
             html += '<table>';
