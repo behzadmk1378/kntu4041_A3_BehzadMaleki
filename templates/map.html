@@ -24,8 +24,16 @@
         <!-- Layer control panel on the left -->
         <div id="layer-panel">
             <h3>Layers</h3>
+            
+            <!-- Select All / Deselect All Button -->
+            <div style="margin-bottom: 10px; padding: 0 10px;">
+                <button id="toggle-all-layers" style="width: 100%; padding: 8px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; font-size: 0.9em;">
+                    ☑ Deselect All Layers
+                </button>
+            </div>
+            
             <div class="layer-list">
-                <!-- Base Layer -->
+                <!-- Base Layer (always present) -->
                 <div class="layer-item">
                     <label>
                         <input type="checkbox" id="osm-toggle" checked>
@@ -36,39 +44,10 @@
                 <!-- Separator -->
                 <div style="margin: 10px 0; padding: 5px 0; border-top: 1px solid #ddd;">
                     <strong style="font-size: 0.9em; color: #667eea;">Golestan Layers</strong>
+                    <span style="font-size: 0.75em; color: #999; margin-left: 5px;">(Use ▲▼ to reorder)</span>
                 </div>
                 
-                <!-- Golestan: Rivers Layer -->
-                <div class="layer-item">
-                    <label>
-                        <input type="checkbox" id="rivers-toggle" checked>
-                        <span>Rivers</span>
-                    </label>
-                </div>
-                
-                <!-- Golestan: Cities Layer -->
-                <div class="layer-item">
-                    <label>
-                        <input type="checkbox" id="cities-toggle" checked>
-                        <span>Cities</span>
-                    </label>
-                </div>
-                
-                <!-- Golestan: Province Boundary -->
-                <div class="layer-item">
-                    <label>
-                        <input type="checkbox" id="province-toggle" checked>
-                        <span>Province Boundary</span>
-                    </label>
-                </div>
-                
-                <!-- Golestan: Study Area -->
-                <div class="layer-item">
-                    <label>
-                        <input type="checkbox" id="studyarea-toggle" checked>
-                        <span>Study Area</span>
-                    </label>
-                </div>
+                <!-- GeoServer layers will be added here dynamically -->
             </div>
         </div>
         
@@ -92,6 +71,10 @@
     <!-- OpenLayers JavaScript library from CDN -->
     <script src="https://cdn.jsdelivr.net/npm/ol@v7.3.0/dist/ol.js"></script>
     <!-- Custom JavaScript for map initialization and interactions -->
-    <script src="{{ url_for('static', filename='js/map.js') }}"></script>
+    <!-- DYNAMIC VERSION: Automatically loads ALL layers from GeoServer -->
+    <script src="{{ url_for('static', filename='js/map_dynamic.js') }}"></script>
+    
+    <!-- MANUAL VERSION: Comment line above and uncomment below to use manual layer configuration -->
+    <!-- <script src="{{ url_for('static', filename='js/map.js') }}"></script> -->
 </body>
 </html>
