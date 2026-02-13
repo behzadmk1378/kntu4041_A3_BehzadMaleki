@@ -13,7 +13,6 @@ A full-featured WebGIS application built with Flask backend and OpenLayers front
 ## 📋 Table of Contents
 
 - [Features](#-features)
-- [Demo](#-demo)
 - [Installation](#-installation)
 - [Usage](#-usage)
 - [Project Structure](#-project-structure)
@@ -23,8 +22,14 @@ A full-featured WebGIS application built with Flask backend and OpenLayers front
 - [Screenshots](#-screenshots)
 - [Troubleshooting](#-troubleshooting)
 - [Contributing](#-contributing)
+- [Security Considerations](#-security-considerations)
+- [Learning Resources](#-learning-resources)
+- [Academic Context](#-academic-context)
 - [License](#-license)
 - [Contact](#-contact)
+- [Acknowledgments](#-acknowledgments)
+- [Future Enhancements](#-future-enhancements)
+- [Version History](#-version-history)
 
 ---
 
@@ -74,49 +79,6 @@ A full-featured WebGIS application built with Flask backend and OpenLayers front
 - **Success Notifications**: Feedback for successful actions
 - **Feature Info Panel**: Displays properties with layer name badges
 - **Legend Panel**: Shows color ramps and symbology for active layer
-
----
-
-## 🎬 Demo
-
-### Login Page
-![Login Page](screenshots/login.png)
-The application starts with a secure login page featuring a modern purple gradient design.
-
-### Registration
-![Registration Page](screenshots/register.png)
-New users can easily register with username, email, and password.
-
-### Interactive Map with Dynamic Layers
-![Map Interface](screenshots/map_interface.png)
-Once logged in, users can:
-- Pan and zoom the map
-- Toggle multiple WMS layers from local GeoServer
-- Reorder layers using ▲▼ buttons (top = front)
-- Select/Deselect all layers with one click
-- View dynamic legend for the topmost visible layer
-- Click on features to see detailed attributes
-
-### Layer Control Panel
-![Layer Panel](screenshots/layer_panel.png)
-- Checkbox for each layer (on/off toggle)
-- Reorder buttons (▲▼) to change layer stacking
-- Bulk control button (Select All / Deselect All)
-- Scrollable for many layers
-
-### Dynamic Legend
-![Legend Panel](screenshots/legend.png)
-- Automatically shows legend for topmost visible layer
-- Updates when toggling or reordering layers
-- Displays color ramps, symbols, and classifications
-
-
-### Feature Info Panel
-![Feature Info](screenshots/feature_info.png)
-- Click any feature to view attributes
-- Shows layer name badge
-- Formatted property table
-- Close button for clean interface
 
 ---
 
@@ -525,32 +487,6 @@ export GEOSERVER_WORKSPACE=your_workspace
   - Using "Select All / Deselect All"
 - Displays color ramps, symbols, and classifications from GeoServer
 - Positioned above zoom controls
-
-### 6. Flood Risk Visualization
-![Flood Risk Layer](screenshots/flood_risk.png)
-- **4-color classification**:
-  - Green: Low Risk (0-0.2)
-  - Yellow: Medium Risk (0.2-0.4)
-  - Orange: High Risk (0.4-0.6)
-  - Red: Extreme Risk (0.6-0.83)
-- Semi-transparent overlay (85% opacity)
-- Legend showing all categories
-
-### 7. Land Use/Land Cover (LULC)
-![LULC Layer](screenshots/lulc.png)
-- **ESA WorldCover 100m** classification
-- **11 distinct categories**:
-  - Tree Cover (dark green)
-  - Shrubland (orange)
-  - Grassland (yellow)
-  - Cropland (pink)
-  - Built-up/Urban (red)
-  - Bare/Sparse Vegetation (gray)
-  - Snow/Ice (white)
-  - Water Bodies (blue)
-  - Wetland (teal)
-  - Mangroves (light green)
-  - Moss/Lichen (beige)
 
 ### 8. Feature Info Panel
 ![Feature Info](screenshots/feature_info.png)
