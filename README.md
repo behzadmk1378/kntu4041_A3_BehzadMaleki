@@ -501,22 +501,6 @@ export GEOSERVER_WORKSPACE=your_workspace
   - Support for multiple features (shows all clicked features)
   - Bottom-right positioning (doesn't overlap controls)
 
-### 9. Layer Reordering Demo
-![Layer Reordering](screenshots/reordering.png)
-- Shows ▲▼ buttons in action
-- Demonstrates layer stacking:
-  - Top of panel = front on map (highest z-index)
-  - Bottom of panel = back on map (lowest z-index)
-- Arrows highlight current positions
-
-### 10. Bulk Layer Control
-![Select All/Deselect All](screenshots/bulk_control.png)
-- Button showing "☑ Deselect All Layers" (when all visible)
-- Changes to "☐ Select All Layers" (when some/all hidden)
-- Updates all checkboxes simultaneously
-- Legend updates to show topmost remaining visible layer
-
----
 
 ## 🐛 Troubleshooting
 
