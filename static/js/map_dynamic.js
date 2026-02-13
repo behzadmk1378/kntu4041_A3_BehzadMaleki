@@ -28,6 +28,24 @@ const PUBLIC_GEOSERVER = {
 const activeConfig = USE_LOCAL_GEOSERVER ? LOCAL_GEOSERVER : PUBLIC_GEOSERVER;
 
 // ==========================================================================
+// LAYER STYLE CONFIGURATION
+// ==========================================================================
+// Define custom styles for specific layers (optional)
+// If not specified, GeoServer's default style will be used
+// Format: 'layerName': 'styleName'
+const LAYER_STYLES = {
+    // Example configurations:
+    // 'rivers': 'blue_rivers',           // Blue line style for rivers
+    // 'Golestan_Cities': 'cities_labeled', // Points with labels
+    // 'Golestan_Province': 'province_boundary', // Polygon with border
+    // 'elevation': 'dem_shaded_relief',  // Shaded relief for DEM
+    // 'NDVI': 'ndvi_color_ramp'         // Color ramp for NDVI
+    
+    // Add your custom styles here:
+    // Uncomment and modify as needed after creating styles in GeoServer
+};
+
+// ==========================================================================
 // DYNAMIC LAYER MANAGEMENT
 // ==========================================================================
 let geoserverLayers = [];  // Will hold all dynamically loaded layers
@@ -68,19 +86,30 @@ function formatLayerName(layerName) {
 }
 
 /**
- * Create a WMS layer for a given layer name
+ * Create a WMS layer for a given layer name with optional custom style
+ * @param {string} layerName - The layer name (without workspace prefix)
+ * @param {string} customStyle - Optional style name from GeoServer
  */
-function createWMSLayer(layerName) {
+function createWMSLayer(layerName, customStyle = '') {
     const fullLayerName = USE_LOCAL_GEOSERVER 
         ? `${activeConfig.workspace}:${layerName}`
         : layerName;
     
+    // Build WMS parameters
+    const wmsParams = {
+        'LAYERS': fullLayerName,
+        'TILED': true
+    };
+    
+    // Add custom style if specified
+    // If empty, GeoServer will use the layer's default style
+    if (customStyle) {
+        wmsParams['STYLES'] = customStyle;
+    }
+    
     const source = new ol.source.TileWMS({
         url: activeConfig.url,
-        params: {
-            'LAYERS': fullLayerName,
-            'TILED': true
-        },
+        params: wmsParams,
         serverType: 'geoserver',
         transition: 0
     });
@@ -112,12 +141,15 @@ function createWMSLayer(layerName) {
     
     layer.set('layerName', fullLayerName);  // Store layer name for reference
     layer.set('displayName', formatLayerName(layerName));
+    layer.set('shortName', layerName);  // Store short name for style lookup
+    layer.set('customStyle', customStyle);  // Store applied style
     
     return layer;
 }
 
 /**
  * Update map layer order based on panel order
+ * Top of panel = Top of map (rendered last, appears on top)
  */
 function updateLayerOrder() {
     // Get all layer items from the panel in current order
@@ -131,6 +163,58 @@ function updateLayerOrder() {
         const index = parseInt(layerItems[i].dataset.layerIndex);
         map.addLayer(geoserverLayers[index]);
     }
+    
+    // Update legend to show topmost visible layer
+    updateLegend();
+}
+
+/**
+ * Update legend to show the topmost visible layer
+ */
+function updateLegend() {
+    const legendContent = document.getElementById('legend-content');
+    
+    // Get all layer items in panel order (top to bottom)
+    const layerItems = document.querySelectorAll('.layer-item[data-layer-index]');
+    
+    // Find the first (topmost) visible layer
+    let topmostLayer = null;
+    let topmostLayerName = null;
+    
+    for (let i = 0; i < layerItems.length; i++) {
+        const index = parseInt(layerItems[i].dataset.layerIndex);
+        const layer = geoserverLayers[index];
+        
+        if (layer && layer.getVisible()) {
+            topmostLayer = layer;
+            topmostLayerName = layer.get('displayName');
+            break;
+        }
+    }
+    
+    // If no layer is visible, show placeholder
+    if (!topmostLayer) {
+        legendContent.innerHTML = '<p style="font-size: 0.8em; color: #999; margin: 0;">No layer visible</p>';
+        return;
+    }
+    
+    // Get layer info
+    const fullLayerName = topmostLayer.get('layerName');
+    const customStyle = topmostLayer.get('customStyle');
+    
+    // Build GetLegendGraphic URL
+    const legendUrl = USE_LOCAL_GEOSERVER 
+        ? `${activeConfig.url}?SERVICE=WMS&VERSION=1.1.0&REQUEST=GetLegendGraphic&FORMAT=image/png&LAYER=${fullLayerName}${customStyle ? '&STYLE=' + customStyle : ''}`
+        : `${activeConfig.url}?SERVICE=WMS&VERSION=1.1.0&REQUEST=GetLegendGraphic&FORMAT=image/png&LAYER=${fullLayerName}`;
+    
+    // Display legend
+    legendContent.innerHTML = `
+        <div style="font-size: 0.8em; color: #667eea; margin-bottom: 6px; font-weight: 600;">
+            ${topmostLayerName}
+        </div>
+        <img src="${legendUrl}" alt="Legend for ${topmostLayerName}" style="max-width: 100%; height: auto;" 
+             onerror="this.parentElement.innerHTML='<p style=\\'font-size: 0.75em; color: #999;\\'>Legend not available</p>';">
+    `;
 }
 
 /**
@@ -177,6 +261,7 @@ function addLayerCheckbox(layer, index) {
     checkbox.checked = true;
     checkbox.addEventListener('change', function(e) {
         layer.setVisible(e.target.checked);
+        updateLegend();  // Update legend when layer visibility changes
     });
     
     const span = document.createElement('span');
@@ -260,9 +345,19 @@ async function loadGeoServerLayers() {
             
             console.log(`Found ${layerNames.length} layers in workspace "${activeConfig.workspace}":`, layerNames);
             
-            // Create layers dynamically
+            // Create layers dynamically with custom styles if specified
             layerNames.forEach((layerName, index) => {
-                const layer = createWMSLayer(layerName);
+                // Look up custom style for this layer (if defined in LAYER_STYLES)
+                const customStyle = LAYER_STYLES[layerName] || '';
+                
+                // Log style usage for debugging
+                if (customStyle) {
+                    console.log(`  - ${layerName} using custom style: ${customStyle}`);
+                } else {
+                    console.log(`  - ${layerName} using default style`);
+                }
+                
+                const layer = createWMSLayer(layerName, customStyle);
                 geoserverLayers.push(layer);
                 map.addLayer(layer);
                 addLayerCheckbox(layer, index);
@@ -270,6 +365,11 @@ async function loadGeoServerLayers() {
             
             if (layerNames.length === 0) {
                 alert(`No layers found in workspace "${activeConfig.workspace}". Make sure you have published layers in GeoServer.`);
+            } else {
+                // Set initial layer order (top of panel = top of map)
+                setTimeout(() => {
+                    updateLayerOrder();
+                }, 100);
             }
             
         } else {
@@ -278,6 +378,11 @@ async function loadGeoServerLayers() {
             geoserverLayers.push(layer);
             map.addLayer(layer);
             addLayerCheckbox(layer, 0);
+            
+            // Update legend
+            setTimeout(() => {
+                updateLegend();
+            }, 100);
         }
         
     } catch (error) {
@@ -452,6 +557,9 @@ document.getElementById('toggle-all-layers').addEventListener('click', function(
         button.innerHTML = '☐ Select All Layers';
         button.style.background = '#999';
     }
+    
+    // Update legend
+    updateLegend();
 });
 
 // ==========================================================================

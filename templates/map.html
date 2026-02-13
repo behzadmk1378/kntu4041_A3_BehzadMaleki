@@ -54,6 +54,14 @@
         <!-- Loading indicator - shown while map tiles are loading -->
         <div id="loading" style="display:none;">Loading map...</div>
         
+        <!-- Legend panel (bottom-left, shows legend for top visible layer) -->
+        <div id="legend-panel">
+            <h4 style="margin: 0 0 8px 0; font-size: 0.85em; color: #667eea;">Legend</h4>
+            <div id="legend-content" style="max-height: 300px; overflow-y: auto;">
+                <p style="font-size: 0.8em; color: #999; margin: 0;">No layer selected</p>
+            </div>
+        </div>
+        
         <!-- Map container - OpenLayers will render here -->
         <div id="map"></div>
         
