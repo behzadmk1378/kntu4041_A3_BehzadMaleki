@@ -110,12 +110,6 @@ Once logged in, users can:
 - Updates when toggling or reordering layers
 - Displays color ramps, symbols, and classifications
 
-### Custom SLD Styles
-![Flood Risk Style](screenshots/flood_risk.png)
-- 4-color flood risk classification (Green → Yellow → Orange → Red)
-
-![LULC Style](screenshots/lulc.png)
-- Land Use/Land Cover with 11 distinct categories
 
 ### Feature Info Panel
 ![Feature Info](screenshots/feature_info.png)
