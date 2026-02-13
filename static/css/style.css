@@ -250,6 +250,13 @@ body {
     font-size: 14px;
 }
 
+/* OpenLayers zoom controls - move to bottom-left */
+.ol-zoom {
+    top: auto !important;
+    bottom: 10px !important;
+    left: 10px !important;
+}
+
 /* Header bar at top of map page */
 .map-header {
     position: absolute;   /* Position over the map */
